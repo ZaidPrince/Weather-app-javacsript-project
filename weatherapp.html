@@ -1,0 +1,121 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="weatherapp.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Document</title>
+</head>
+
+<body class="h-screen flex justify-center items-center flex-col">
+    <div class="flex justify-center mt-5 gap-4 bg-black p-4 rounded-lg">
+        <input type="text" class="p-2 rounded-lg cityname" placeholder="Type city name here">
+        <i class="fa-solid fa-magnifying-glass bg-white px-3 pt-3 rounded-full searchicon"></i>
+    </div>
+    <div class="hidden errors text-red-700 font-semibold w-[30%] bg-sky-300 ">
+
+    </div>
+   <div class="hidden w-[30%] h-1/2 alldata">
+     <div  class=" w-full h-full   bg-gradient-to-r from-red-400 via-orange-500 to-green-400 rounded-xl mt-1 flex flex-col items-center ">
+    <div class=" bg-[url('rain.webp')] w-full h-[15%] bg-contain bg-no-repeat mt-3 justify-center bg-center">
+
+    </div>
+    <div class="flex flex-col items-center">
+        <h1 class="text-2xl font-semibold rain"></h1>
+        <h1 class="text-3xl font-semibold font-serif city">Islamabad</h1>
+        <h1 class="text-4xl font-semibold mt-5 temperature">30°C</h1>
+        
+       </div>
+       <div class="flex justify-center mt-5 gap-6">
+        <div>
+            <h1 class="text-xl font-bold">Wind Speed</h1>
+            <div class="flex">
+                <div class="bg-[url('windspeed.png')] w-12 h-10 bg-contain bg-no-repeat -mt-2"></div>
+                <p class="font-bold windspeed">60 Km/h</p>
+            
+            </div>
+
+
+        </div>
+        <div>
+            <h1 class="text-xl font-bold">Humidity</h1>
+            <div class="flex">
+                <div class="bg-[url('humidity.webp')] w-12 h-8 bg-contain bg-no-repeat"></div>
+                    <p class="humidity font-bold">50%</p>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+</div>
+   
+   
+    
+</body>
+</html>
+
+<script>
+
+const search=document.querySelector('.searchicon')
+search.addEventListener('click',function (e) {
+   
+   
+
+    
+    let city =document.querySelector('.cityname').value
+    if (city) {
+
+        getWeatherData(city) 
+
+    }
+    else{
+        showError('please enter a valid city name')
+    }
+
+    
+})
+
+
+function getWeatherData(city) {
+    fetch(`http://api.weatherapi.com/v1/current.json?key=c8561e37fa324d58b74170116240608&q=${city}&aqi=no`)
+        .then(response => {
+            if (!response.ok) {
+                return Promise.reject(response.statusText);
+            }
+            return response.json();
+           
+        })
+        .then(data => {
+           updatedata(data)
+           
+        })
+        .catch(error => {
+            document.querySelector('.alldata').style.display='none'
+            showError('There was a problem with the fetch operation: ', error);
+        });
+}
+function updatedata(data) {
+     
+    document.querySelector('.errors').style.display='none'
+            document.querySelector('.temperature').innerHTML =Math.round( data.current.temp_c)+`°C`;
+            document.querySelector('.humidity').innerHTML = data.current.humidity+`%`;
+            document.querySelector('.windspeed').innerHTML = data.current.wind_kph+`Km/h`;
+            document.querySelector('.city').innerHTML = data.location.name
+            document.querySelector('.rain').innerHTML = data.current.condition.text
+            
+           document.querySelector('.alldata').style.display='block'
+}
+
+
+function showError(message, error) {
+    document.querySelector('.alldata').style.display='none'
+    document.querySelector('.errors').style.display ='block'
+    document.querySelector('.errors').innerHTML = message + error;
+    
+}
+
+</script>
+</html> 
